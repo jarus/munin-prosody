@@ -30,6 +30,8 @@ def main():
 	try: mode = sys.argv[1]
 	except Exception, IndexError: mode = ""
 	wildcard = sys.argv[0].split("prosody_")[1].split("_")[0]
+	host = os.environ.get('host', 'localhost')
+	port = int(os.environ.get('port', 5582))
 	
 	if mode == "suggest":
 		print "c2s"
@@ -49,7 +51,7 @@ def main():
 			
 		else:
 			Regex = re.compile(r"Total:\s(\d+)\s")
-			telnet = telnetlib.Telnet('localhost', 5582)
+			telnet = telnetlib.Telnet(host, port)
 			telnet.write("c2s:show_secure()")
 			telnetResponse = telnet.read_until("secure client connections", 5)
 			ParsedInfo = Regex.findall(telnetResponse)
@@ -76,7 +78,7 @@ def main():
 			
 		else:	
 			Regex = re.compile(r"(\d+) outgoing, (\d+)")
-			telnet = telnetlib.Telnet('localhost', 5582)
+			telnet = telnetlib.Telnet(host, port)
 			telnet.write("s2s:show()")
 			telnetResponse = telnet.read_until("connections", 5)
 			ParsedInfo = Regex.findall(telnetResponse)
