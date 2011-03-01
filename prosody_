@@ -84,6 +84,31 @@ def main():
 			ParsedInfo = Regex.findall(telnetResponse)
 			print "outgoing_connections.value %s" % (ParsedInfo[0][0])
 			print "incoming_connections.value %s" % (ParsedInfo[0][1])
-		
+			
+	elif wildcard == "presence":
+		if mode == "config":
+			print "graph_title Prosody Client Presence"
+			print "graph_vlabel clients"
+			print "graph_category Prosody"
+
+			print "available.label Avaible Clients"
+			print "chat.label Ready for Chat Clients"
+			print "away.label Away Clients"
+			print "xa.label Extended Away Clients"
+			print "dnd.label Do Not Disturb Clients"
+			sys.exit(0)
+
+		else:	
+			Regex = re.compile(r"- (.*?)\(\d+\)")
+			telnet = telnetlib.Telnet(host, port)
+			telnet.write("c2s:show()")
+			telnetResponse = telnet.read_until("connections", 5)
+			ParsedInfo = Regex.findall(telnetResponse)
+			print "available.value %s" % (ParsedInfo.count("available"))
+			print "chat.value %s" % (ParsedInfo.count("chat"))
+			print "away.value %s" % (ParsedInfo.count("away"))
+			print "xa.value %s" % (ParsedInfo.count("xa"))
+			print "dnd.value %s" % (ParsedInfo.count("dnd"))
+	
 if __name__ == '__main__':
 	main()
