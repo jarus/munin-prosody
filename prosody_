@@ -36,6 +36,7 @@ def main():
 	if mode == "suggest":
 		print "c2s"
 		print "s2s"
+		print "presence"
 		sys.exit(0)
 
 	if wildcard == "c2s":
@@ -102,7 +103,7 @@ def main():
 			Regex = re.compile(r"- (.*?)\(\d+\)")
 			telnet = telnetlib.Telnet(host, port)
 			telnet.write("c2s:show()")
-			telnetResponse = telnet.read_until("connections", 5)
+			telnetResponse = telnet.read_until("clients", 5)
 			ParsedInfo = Regex.findall(telnetResponse)
 			print "available.value %s" % (ParsedInfo.count("available"))
 			print "chat.value %s" % (ParsedInfo.count("chat"))
