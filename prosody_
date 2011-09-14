@@ -26,9 +26,10 @@ import telnetlib
 import re
 
 def main():	
-	mode = ""
-	try: mode = sys.argv[1]
-	except Exception, IndexError: mode = ""
+	try:
+	    mode = sys.argv[1]
+	except IndexError:
+	    mode = ""
 	wildcard = sys.argv[0].split("prosody_")[1].split("_")[0]
 	host = os.environ.get('host', 'localhost')
 	port = int(os.environ.get('port', 5582))
@@ -47,25 +48,31 @@ def main():
 		
 			print "all_client_connections.label client connections"
 			print "secure_client_connections.label secure client connections"
-			print "insecure_client_connections.label insecure client connections"
+			print "insecure_client_connections.label insecure client \
+			       connections"
 			sys.exit(0)
-			
+
 		else:
-			Regex = re.compile(r"Total:\s(\d+)\s")
+			connection_count_re = re.compile(r"Total:\s(\d+)\s")
 			telnet = telnetlib.Telnet(host, port)
 			telnet.write("c2s:show_secure()")
-			telnetResponse = telnet.read_until("secure client connections", 5)
-			ParsedInfo = Regex.findall(telnetResponse)
-			scc = int(ParsedInfo[0])
-			print "secure_client_connections.value %s" % (scc)
+			telnet_response = telnet.read_until("secure client connections",
+			                                    5)
+			parsed_info = connection_count_re.findall(telnet_response)
+			secure_client_connections = int(parsed_info[0])
+			print "secure_client_connections.value %s" % \
+			      (secure_client_connections)
 			
 			telnet.write("c2s:show_insecure()")
-			telnetResponse = telnet.read_until("insecure client connections", 5)
-			ParsedInfo = Regex.findall(telnetResponse)
-			icc = int(ParsedInfo[0])
-			print "insecure_client_connections.value %s" % (icc)
-			cc = scc + icc
-			print "all_client_connections.value %s" % (cc)
+			telnet_response = telnet.read_until("insecure client connections",
+			                                    5)
+			parsed_info = connection_count_re.findall(telnet_response)
+			insecure_client_connections = int(parsed_info[0])
+			print "insecure_client_connections.value %s" % \
+			      (insecure_client_connections)
+			all_client_connections = secure_client_connections + \
+			                         insecure_client_connections
+			print "all_client_connections.value %s" % (all_client_connections)
 			
 	elif wildcard == "s2s":
 		if mode == "config":
@@ -78,13 +85,13 @@ def main():
 			sys.exit(0)
 			
 		else:	
-			Regex = re.compile(r"(\d+) outgoing, (\d+)")
+			server_connections_re = re.compile(r"(\d+) outgoing, (\d+)")
 			telnet = telnetlib.Telnet(host, port)
 			telnet.write("s2s:show()")
-			telnetResponse = telnet.read_until("connections", 5)
-			ParsedInfo = Regex.findall(telnetResponse)
-			print "outgoing_connections.value %s" % (ParsedInfo[0][0])
-			print "incoming_connections.value %s" % (ParsedInfo[0][1])
+			telnet_response = telnet.read_until("connections", 5)
+			parsed_info = server_connections_re.findall(telnet_response)
+			print "outgoing_connections.value %s" % (parsed_info[0][0])
+			print "incoming_connections.value %s" % (parsed_info[0][1])
 			
 	elif wildcard == "presence":
 		if mode == "config":
@@ -100,16 +107,16 @@ def main():
 			sys.exit(0)
 
 		else:	
-			Regex = re.compile(r"- (.*?)\(\d+\)")
+			client_presence_re = re.compile(r"- (.*?)\(\d+\)")
 			telnet = telnetlib.Telnet(host, port)
 			telnet.write("c2s:show()")
-			telnetResponse = telnet.read_until("clients", 5)
-			ParsedInfo = Regex.findall(telnetResponse)
-			print "available.value %s" % (ParsedInfo.count("available"))
-			print "chat.value %s" % (ParsedInfo.count("chat"))
-			print "away.value %s" % (ParsedInfo.count("away"))
-			print "xa.value %s" % (ParsedInfo.count("xa"))
-			print "dnd.value %s" % (ParsedInfo.count("dnd"))
+			telnet_response = telnet.read_until("clients", 5)
+			parsed_info = client_presence_re.findall(telnet_response)
+			print "available.value %s" % (parsed_info.count("available"))
+			print "chat.value %s" % (parsed_info.count("chat"))
+			print "away.value %s" % (parsed_info.count("away"))
+			print "xa.value %s" % (parsed_info.count("xa"))
+			print "dnd.value %s" % (parsed_info.count("dnd"))
 	
 if __name__ == '__main__':
 	main()
