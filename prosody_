@@ -48,8 +48,8 @@ def main():
         
             print "all_client_connections.label client connections"
             print "secure_client_connections.label secure client connections"
-            print "insecure_client_connections.label insecure client \
-                   connections"
+            print "insecure_client_connections.label insecure client " \
+                  "connections"
             sys.exit(0)
 
         else:
