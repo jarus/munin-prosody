@@ -141,7 +141,8 @@ def main():
             telnet.write("server:uptime()")
             telnet_response = telnet.read_until("minutes (", 5)
             parsed_info = uptime_re.findall(telnet_response)
-            uptime_value = float(parsed_info[0]) + float(parsed_info[1])/24 + float(parsed_info[2])/60/24
+            uptime_value = float(parsed_info[0]) + float(parsed_info[1])/24 +\
+                           float(parsed_info[2])/60/24
             print "uptime.value %s" % (uptime_value)
 
     elif wildcard == "users":
@@ -161,15 +162,19 @@ def main():
                     for account in accounts:
                         headcount += 1
                     if mode == "config":
-                        print vhost.replace("%2e","_") + ".label %s" % (vhost.replace("%2e","."))
+                        print vhost.replace("%2e","_") + ".label %s" % \
+                              (vhost.replace("%2e","."))
                     else:
-                        print vhost.replace("%2e","_") + ".value %s" % (headcount)
+                        print vhost.replace("%2e","_") + ".value %s" % \
+                              (headcount)
 
 def listdirs(folder):
-    return [d for d in os.listdir(folder) if os.path.isdir(os.path.join(folder, d))]
+    return [d for d in os.listdir(folder) if \
+            os.path.isdir(os.path.join(folder, d))]
 
 def listfiles(folder):
-    return [d for d in os.listdir(folder) if os.path.isfile(os.path.join(folder, d))]
+    return [d for d in os.listdir(folder) if \
+            os.path.isfile(os.path.join(folder, d))]
 
 if __name__ == '__main__':
     main()
