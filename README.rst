@@ -50,3 +50,12 @@ When you want to change the default host (localhost) and port (5582) than you ca
     [prosody_*]
     env.host example.com
     env.port 5582
+
+
+If you want to get the number of registered users, add the following lines to **/etc/munin/plugin-conf.d/munin-node**:
+
+::
+
+    [prosody_users]
+    user prosody
+    group prosody
