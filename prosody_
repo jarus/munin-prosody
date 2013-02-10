@@ -25,7 +25,8 @@ import os
 import telnetlib
 import re
 
-def main(): 
+
+def main():
     try:
         mode = sys.argv[1]
     except IndexError:
@@ -33,7 +34,7 @@ def main():
     wildcard = sys.argv[0].split("prosody_")[1].split("_")[0]
     host = os.environ.get('host', 'localhost')
     port = int(os.environ.get('port', 5582))
-    
+
     if mode == "suggest":
         print "c2s"
         print "s2s"
@@ -47,7 +48,7 @@ def main():
             print "graph_title Prosody C2S Connections"
             print "graph_vlabel users"
             print "graph_category Prosody"
-        
+
             print "all_client_connections.label client connections"
             print "secure_client_connections.label secure client connections"
             print "insecure_client_connections.label insecure client " \
@@ -64,7 +65,7 @@ def main():
             secure_client_connections = int(parsed_info[0])
             print "secure_client_connections.value %s" % \
                   (secure_client_connections)
-            
+
             telnet.write("c2s:show_insecure()\n")
             telnet_response = telnet.read_until("insecure client connections",
                                                 5)
@@ -76,18 +77,18 @@ def main():
                                      insecure_client_connections
             print "all_client_connections.value %s" % (all_client_connections)
             telnet.write("quit")
-            
+
     elif wildcard == "s2s":
         if mode == "config":
             print "graph_title Prosody S2S Connections"
             print "graph_vlabel servers"
             print "graph_category Prosody"
-        
+
             print "outgoing_connections.label outgoing connections"
             print "incoming_connections.label incoming connections"
             sys.exit(0)
-            
-        else:   
+
+        else:
             server_connections_re = re.compile(r"(\d+) outgoing, (\d+)")
             telnet = telnetlib.Telnet(host, port)
             telnet.write("s2s:show()\n")
@@ -96,7 +97,7 @@ def main():
             print "outgoing_connections.value %s" % (parsed_info[0][0])
             print "incoming_connections.value %s" % (parsed_info[0][1])
             telnet.write("quit")
-            
+
     elif wildcard == "presence":
         if mode == "config":
             print "graph_title Prosody Client Presence"
@@ -110,7 +111,7 @@ def main():
             print "dnd.label Do Not Disturb Clients"
             sys.exit(0)
 
-        else:   
+        else:
             client_presence_re = re.compile(r"- (.*?)\(\d+\)")
             telnet = telnetlib.Telnet(host, port)
             telnet.write("c2s:show()\n")
@@ -144,8 +145,9 @@ def main():
             telnet.write("server:uptime()\n")
             telnet_response = telnet.read_until("minutes (", 5)
             parsed_info = uptime_re.findall(telnet_response)
-            uptime_value = float(parsed_info[0]) + float(parsed_info[1])/24 +\
-                           float(parsed_info[2])/60/24
+            uptime_value = float(parsed_info[0]) + \
+                           float(parsed_info[1]) / 24 +\
+                           float(parsed_info[2]) / 60 / 24
             print "uptime.value %s" % (uptime_value)
             telnet.write("quit")
 
@@ -161,18 +163,20 @@ def main():
             for vhost in vhosts:
                 account_dir = os.path.join(base_dir, vhost, "accounts")
                 if os.path.isdir(account_dir):
-                    vhost = vhost.replace("%2e",".")
-                    munin_var = vhost.replace(".","_")
+                    vhost = vhost.replace("%2e", ".")
+                    munin_var = vhost.replace(".", "_")
                     if mode == "config":
                         print "%s.label %s" % (munin_var, vhost)
                     else:
                         accounts = len([listfiles(account_dir)])
                         print "%s.value %s" % (munin_var, accounts)
 
+
 def listdirs(folder):
     for x in os.listdir(folder):
         if os.path.isdir(os.path.join(folder, x)):
             yield x
+
 
 def listfiles(folder):
     for x in os.listdir(folder):
