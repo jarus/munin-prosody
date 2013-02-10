@@ -25,7 +25,6 @@ import os
 import telnetlib
 import re
 
-
 def main():
     try:
         mode = sys.argv[1]
@@ -157,19 +156,30 @@ def main():
             print "graph_vlabel users"
             print "graph_category Prosody"
 
-        base_dir = os.environ.get('internal_storage_path', "/var/lib/prosody")
-        if os.path.isdir(base_dir):
-            vhosts = listdirs(base_dir)
-            for vhost in vhosts:
-                account_dir = os.path.join(base_dir, vhost, "accounts")
-                if os.path.isdir(account_dir):
-                    vhost = vhost.replace("%2e", ".")
-                    munin_var = vhost.replace(".", "_")
-                    if mode == "config":
-                        print "%s.label %s" % (munin_var, vhost)
-                    else:
-                        accounts = len([listfiles(account_dir)])
-                        print "%s.value %s" % (munin_var, accounts)
+        telnet = telnetlib.Telnet(host, port)
+
+        host_regex = re.compile(r"\S*[\.]*\S*\.\S{1,4}")
+        user_count_regex = re.compile(r"Showing \d+ of (\d+) users")
+        telnet.write('>for host, hostsess in pairs(hosts) do '
+                     'if hostsess.type == "local" then print(host) end '
+                     'end\n')
+        telnet_response = telnet.read_until("Result: nil", 5)
+        hosts = host_regex.findall(telnet_response)
+        for host in hosts:
+            if host.startswith('http'):
+                continue
+            munin_var = host.replace(".", "_")
+            if mode == "config":
+                print "%s.label %s" % (munin_var, host)
+            else:
+                telnet.write('user:list("%s","^$")\n' % host)
+                telnet_response = telnet.read_until("users", 5)
+                users = user_count_regex.findall(telnet_response)
+                if len(users) > 0:
+                    print "%s.value %s" % (munin_var, users[0])
+                else:
+                    print "%s.value -1" % (munin_var)
+        telnet.write("quit")
 
 
 def listdirs(folder):
