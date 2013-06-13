@@ -15,6 +15,8 @@ This wildcard plugin provided at the moment only the **c2s**, **s2s**, **mem**, 
 
 .. image:: http://twattle.net/wp-content/uploads/munin/prosody_users-week.png
 
+.. image:: https://a248.e.akamai.net/camo.github.com/2e0a2a0960082b650837640b02f2fbff446d96a5/687474703a2f2f6f702d636f2e64652f746d702f70726f736f64795f6d656d2d6461792e706e67
+
 Install
 -------
 
