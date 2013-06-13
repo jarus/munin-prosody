@@ -3,7 +3,7 @@ munin-prosody
 
 Is a plugin for the monitoring software `munin <http://http://munin-monitoring.org/>`_ to monitor a `Prosody <http://prosody.im>`_ xmpp server.
 
-This wildcard plugin provided at the moment only the **c2s**, **s2s**, **presence**, **uptime** and **users** suffixes.
+This wildcard plugin provided at the moment only the **c2s**, **s2s**, **mem**, **presence**, **uptime** and **users** suffixes.
 
 .. image:: http://twattle.net/wp-content/uploads/munin/prosody_c2s-week.png
 
@@ -28,6 +28,7 @@ It is very simple to install the plugin.
 
     ln -s /usr/share/munin/plugins/prosody_ /etc/munin/plugins/prosody_c2s
     ln -s /usr/share/munin/plugins/prosody_ /etc/munin/plugins/prosody_s2s
+    ln -s /usr/share/munin/plugins/prosody_ /etc/munin/plugins/prosody_mem
     ln -s /usr/share/munin/plugins/prosody_ /etc/munin/plugins/prosody_presence
     ln -s /usr/share/munin/plugins/prosody_ /etc/munin/plugins/prosody_uptime
     ln -s /usr/share/munin/plugins/prosody_ /etc/munin/plugins/prosody_users

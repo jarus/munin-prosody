@@ -35,12 +35,49 @@ def main():
     port = int(os.environ.get('port', 5582))
 
     if mode == "suggest":
+        print "mem"
         print "c2s"
         print "s2s"
         print "presence"
         print "uptime"
         print "users"
         sys.exit(0)
+
+    if wildcard == "mem":
+        if mode == "config":
+            print "graph_title Prosody Memory Usage"
+            print "graph_vlabel Bytes"
+            print "graph_category Prosody"
+            print "graph_order memory_total memory_used memory_lua";
+            print "graph_args --base 1024 -l 0"
+
+            print "memory_total.draw AREA"
+            print "memory_total.label Total"
+            print "memory_used.draw AREA"
+            print "memory_used.label Used"
+            print "memory_lua.draw AREA"
+            print "memory_lua.label Lua"
+
+            sys.exit(0)
+
+        else:
+            memstats_re = re.compile(r"\|\s(\w+)\s+(\d+)\s+\|")
+            telnet = telnetlib.Telnet(host, port)
+            telnet.write(">for k,v in pairs(pposix.meminfo()) do print(k,v, '|') end\n")
+            mem_response = telnet.read_until("Result:", 5)
+            telnet.write(">collectgarbage('count')*1024\n")
+            telnet.write("quit\n")
+            lua_response = telnet.read_all()
+
+            mem_results = memstats_re.findall(mem_response)
+            mem_map = {}
+            for k, v in mem_results: mem_map[k] = v
+
+            lua_mem = re.compile("Result: (\d+)").findall(lua_response)[0]
+
+            print "memory_total.value", mem_map["allocated"]
+            print "memory_used.value", mem_map["used"]
+            print "memory_lua.value", lua_mem
 
     if wildcard == "c2s":
         if mode == "config":
