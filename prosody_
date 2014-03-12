@@ -195,7 +195,7 @@ def main():
 
         telnet = telnetlib.Telnet(host, port)
 
-        host_regex = re.compile(r"\S*[\.]*\S*\.\S{1,4}")
+        host_regex = re.compile(r"\S*[\.]*\S*\.\S{1,10}")
         user_count_regex = re.compile(r"Showing \d+ of (\d+) users")
         telnet.write('>for host, hostsess in pairs(hosts) do '
                      'if hostsess.type == "local" then print(host) end '
